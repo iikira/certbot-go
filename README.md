@@ -1,6 +1,8 @@
 # certbot-go
 Automatically obtain certs from Let's Encrypt.
+
 Only support dns-01 challenge.
+
 Only support Cloudflare's API v4 to deploy TXT record.
 
 # Usage

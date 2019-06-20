@@ -1,6 +1,8 @@
 # certbot-go
 Automatically obtain certs from Let's Encrypt.
+
 Only support dns-01 challenge.
+
 Only support Cloudflare's API v4 to deploy TXT record.
 
 # Usage
@@ -15,6 +17,8 @@ passthru("certbot-go");
 certbot-go -mod_cf example.com
 ```
 Must set environments CF_API_KEY (for Cloudflare's API key) and CF_API_EMAIL.
+
+See: https://api.cloudflare.com/
 
 ## Manual deploy TXT record, private key would be generated
 ```
