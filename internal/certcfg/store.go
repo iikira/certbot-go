@@ -19,8 +19,8 @@ func privKeyToPemBlock(priv *ecdsa.PrivateKey) (*pem.Block, error) {
 	}, nil
 }
 
-// StorePrivateKey 保存私钥到 outPrivKeyPath
-func StorePrivateKey(outPrivKeyPath string, priv *ecdsa.PrivateKey) error {
+// StoreECPrivateKey 保存EC私钥到 outPrivKeyPath
+func StoreECPrivateKey(outPrivKeyPath string, priv *ecdsa.PrivateKey) error {
 	b, err := privKeyToPemBlock(priv)
 	if err != nil {
 		return err

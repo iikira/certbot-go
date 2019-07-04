@@ -62,7 +62,7 @@ func NewEcdsaSinger() *ecdsa.PrivateKey {
 	return akey
 }
 
-func ReadPrivateKey(privKeyPath string) (*ecdsa.PrivateKey, error) {
+func ReadECPrivateKey(privKeyPath string) (*ecdsa.PrivateKey, error) {
 	data, err := ioutil.ReadFile(privKeyPath)
 	if err != nil {
 		return nil, err

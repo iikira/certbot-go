@@ -21,7 +21,7 @@ Usage of certbot-go:
   -out_csr string
     	path to csr output if not have own CSR (default "csr.pem")
   -out_priv_key string
-    	path to private key output if not have own CSR (default "private.key")
+    	path to private key output if EC PRIVATE KEY has not specified (default "private.key")
   -priv_key string
     	path to private key file
 ```

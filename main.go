@@ -32,7 +32,7 @@ func init() {
 	flag.StringVar(&outCertPath, "out_cert", "certificate.crt", "path to certificate output")
 	flag.StringVar(&outCaBundlePath, "out_ca_bundle", "ca_bundle.crt", "path to ca_bundle output")
 	flag.StringVar(&outCsrPath, "out_csr", "csr.pem", "path to csr output if not have own CSR")
-	flag.StringVar(&outPrivKeyPath, "out_priv_key", "private.key", "path to private key output if not have own CSR")
+	flag.StringVar(&outPrivKeyPath, "out_priv_key", "private.key", "path to private key output if EC PRIVATE KEY has not specified")
 	flag.BoolVar(&cfMode, "mod_cf", false, "using Cloudflare's API to deploy TXT record")
 	flag.Parse()
 
@@ -60,7 +60,7 @@ func main() {
 			priv = certutil.NewEcdsaSinger()
 		} else {
 			// 读取
-			priv, err = certutil.ReadPrivateKey(privKeyPath)
+			priv, err = certutil.ReadECPrivateKey(privKeyPath)
 			checkErr(err)
 		}
 
@@ -70,7 +70,7 @@ func main() {
 
 		// 保存随机生成的 private key
 		if privKeyPath == "" {
-			err = certcfg.StorePrivateKey(outPrivKeyPath, priv)
+			err = certcfg.StoreECPrivateKey(outPrivKeyPath, priv)
 			checkErr(err)
 			log.Printf("private key file stored: %s\n", outPrivKeyPath)
 		}
