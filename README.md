@@ -20,6 +20,8 @@ Usage of certbot-go:
     	path to certificate output (default "certificate.crt")
   -out_csr string
     	path to csr output if not have own CSR (default "csr.pem")
+  -out_fullchain string
+    	path to fullchain output (default "fullchain.crt")
   -out_priv_key string
     	path to private key output if EC PRIVATE KEY has not specified (default "private.key")
   -priv_key string
@@ -31,6 +33,8 @@ Usage of certbot-go:
 certbot-go -mod_cf example.com
 ```
 Must set environments `CF_API_KEY` (for Cloudflare's API key) and `CF_API_EMAIL`.
+
+Note: Cannot use Cloudflare's API for domains with a .cf, .ga, .gq, .ml, or .tk TLD (top-level domain).
 
 See: https://api.cloudflare.com/
 

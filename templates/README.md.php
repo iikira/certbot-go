@@ -20,6 +20,8 @@ certbot-go -mod_cf example.com
 ```
 Must set environments `CF_API_KEY` (for Cloudflare's API key) and `CF_API_EMAIL`.
 
+Note: Cannot use Cloudflare's API for domains with a .cf, .ga, .gq, .ml, or .tk TLD (top-level domain).
+
 See: https://api.cloudflare.com/
 
 ## Manual deploy TXT record, private key would be generated

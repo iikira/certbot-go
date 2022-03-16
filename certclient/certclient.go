@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto"
 	"crypto/x509"
-	"encoding/pem"
 	"github.com/eggsampler/acme/v2"
 )
 
@@ -146,7 +145,7 @@ func (c *CertClient) PrepareDNS(cfunc ChangeDNSFunc) (err error) {
 }
 
 // CreateCert 返回pem格式的证书
-func (c *CertClient) CreateCert() (cert, caBundle []byte, err error) {
+func (c *CertClient) CreateCert() (der []*x509.Certificate, err error) {
 	c.lazyInit()
 	if c.order == nil {
 		err = ErrNotSetOrder
@@ -162,36 +161,6 @@ func (c *CertClient) CreateCert() (cert, caBundle []byte, err error) {
 
 	c.order = &order
 
-	der, err := c.Client.FetchCertificates(*c.account, order.Certificate)
-	if err != nil {
-		return
-	}
-
-	if len(der) < 2 {
-		err = ErrUnexpectedDer
-		return
-	}
-
-	b := pem.Block{
-		Type:  "CERTIFICATE",
-		Bytes: der[0].Raw,
-	}
-
-	// 一般情况下
-	// der[0] 为cert
-	cert = pem.EncodeToMemory(&b)
-	if cert == nil {
-		err = ErrParseCert
-		return
-	}
-
-	// der[1] 为ca_bundle
-	b.Bytes = der[1].Raw
-	caBundle = pem.EncodeToMemory(&b)
-	if caBundle == nil {
-		err = ErrParseCert
-		return
-	}
-
+	der, err = c.Client.FetchCertificates(*c.account, order.Certificate)
 	return
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"crypto/ecdsa"
 	"flag"
 	"fmt"
@@ -16,14 +17,17 @@ import (
 )
 
 var (
-	domains         []string
-	csrPath         string
-	privKeyPath     string
-	outCertPath     string
-	outCaBundlePath string
-	outCsrPath      string
-	outPrivKeyPath  string
-	cfMode          bool
+	domains          []string
+	csrPath          string
+	privKeyPath      string
+	outCertPath      string
+	outCaBundlePath  string
+	outFullChainPath string
+	outCsrPath       string
+	outPrivKeyPath   string
+	cfMode           bool
+
+	ctx = context.Background()
 )
 
 func init() {
@@ -31,6 +35,7 @@ func init() {
 	flag.StringVar(&privKeyPath, "priv_key", "", "path to private key file")
 	flag.StringVar(&outCertPath, "out_cert", "certificate.crt", "path to certificate output")
 	flag.StringVar(&outCaBundlePath, "out_ca_bundle", "ca_bundle.crt", "path to ca_bundle output")
+	flag.StringVar(&outFullChainPath, "out_fullchain", "fullchain.crt", "path to fullchain output")
 	flag.StringVar(&outCsrPath, "out_csr", "csr.pem", "path to csr output if not have own CSR")
 	flag.StringVar(&outPrivKeyPath, "out_priv_key", "private.key", "path to private key output if EC PRIVATE KEY has not specified")
 	flag.BoolVar(&cfMode, "mod_cf", false, "using Cloudflare's API to deploy TXT record")
@@ -115,12 +120,12 @@ func main() {
 
 		err = c.PrepareDNS(func(domain, dnsValue string) error {
 			// 自动从域名推断ZoneName
-			e := s.SetZone(certutil.GetSubDomain(domain))
+			e := s.SetZone(ctx, certutil.GetSubDomain(domain))
 			if e != nil {
 				return e
 			}
 
-			e = s.SetTXTRecord(certutil.GetRecordName(domain), dnsValue)
+			e = s.SetTXTRecord(ctx, certutil.GetRecordName(domain), dnsValue)
 
 			// Sleep 30s, 防止dns缓存未刷新
 			time.Sleep(30 * time.Second)
@@ -129,19 +134,23 @@ func main() {
 		checkErr(err)
 	}
 
-	cert, caBundle, err := c.CreateCert()
+	der, err := c.CreateCert()
+	checkErr(err)
+
+	cert, caBundle, fullChain, err := certutil.CertificatesEncodeToPem(der)
 	checkErr(err)
 
 	err = ioutil.WriteFile(outCertPath, cert, 0600)
 	checkErr(err)
-
 	log.Printf("certificate file stored: %s\n", outCertPath)
 
 	err = ioutil.WriteFile(outCaBundlePath, caBundle, 0600)
 	checkErr(err)
-
 	log.Printf("ca_bundle file stored: %s\n", outCaBundlePath)
 
+	err = ioutil.WriteFile(outFullChainPath, fullChain, 0600)
+	checkErr(err)
+	log.Printf("fullchain file stored: %s\n", outFullChainPath)
 }
 
 func confirm(domain, dnsValue string) error {

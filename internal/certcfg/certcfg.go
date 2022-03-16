@@ -1,8 +1,8 @@
 package certcfg
 
 import (
-	"github.com/iikira/BaiduPCS-Go/pcsutil/converter"
 	"github.com/iikira/configdir"
+	"github.com/iikira/iikira-go-utils/utils/converter"
 	"github.com/syndtr/goleveldb/leveldb"
 	"log"
 )

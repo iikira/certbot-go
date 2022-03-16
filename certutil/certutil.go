@@ -1,6 +1,7 @@
 package certutil
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -68,4 +69,36 @@ func ReadECPrivateKey(privKeyPath string) (*ecdsa.PrivateKey, error) {
 		return nil, err
 	}
 	return ParseEC(data)
+}
+
+func CertificatesEncodeToPem(certificates []*x509.Certificate) (cert, caBundle, fullChain []byte, err error) {
+	if len(certificates) == 0 {
+		err = ErrUnexpectedDer
+		return
+	}
+
+	b := pem.Block{
+		Type:  "CERTIFICATE",
+		Bytes: certificates[0].Raw,
+	}
+	buf := bytes.NewBuffer(nil)
+	err = pem.Encode(buf, &b)
+	if err != nil {
+		return
+	}
+
+	cert = buf.Bytes()
+
+	buf = bytes.NewBuffer(nil) // reset
+	for i := 1; i < len(certificates); i++ {
+		b.Bytes = certificates[i].Raw
+		err = pem.Encode(buf, &b)
+		if err != nil {
+			return
+		}
+	}
+
+	caBundle = buf.Bytes()
+	fullChain = append(cert, caBundle...)
+	return
 }
